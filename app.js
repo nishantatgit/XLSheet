@@ -1,26 +1,25 @@
 (function(doc,window){
     
     function getGrid(){
-        
-       var grid = [[]]; 
-        
-       var cellWidth = ( window.innerWidth - 2*30)/21;
-       var cellHeight = ( window.innerHeight - 2*24)/27;
+    
+       const CELLWIDTH = ( window.innerWidth - 2*30)/21 + "px";
+       const CELLHEIGHT = ( window.innerHeight - 2*24)/27 + "px";
+       const A = 65;
+       const ROWNUM = 27;
+       const COLNUM = 21;
+           
+       var grid = createGrid(ROWNUM); 
        
-       for(var i = 0 ; i< 27 ; i ++){
-           
-           for(var j = 0 ; j< 21 ; j++){
-              
+       window.grid = grid;
+       
+       for(var i = 0 ; i< ROWNUM ; i ++){
+           for(var j = 0 ; j< COLNUM ; j++){
                var cssClass;
-               
                i === 0 || j === 0 ? cssClass = "cell-col-header" : cssClass = "data-cell";
-               
-               doc.getElementById("container1").appendChild(new Cell().setElement().setClass(cssClass).addStyle({width : cellWidth, height : cellHeight}).el);
-               
+               grid[i][j] = new Cell().setElement().setClass(cssClass).setId(String.fromCharCode(A+j-1)+i).addAttributes({ contentEditable : "true"}).addStyle({width : CELLWIDTH, height : CELLHEIGHT});
+               doc.getElementById("container1").appendChild(grid[i][j].el);   
            }
-           
        }
-        
     }
     
     function getCellDiv(type){
@@ -36,28 +35,32 @@
         
     }
     
+    function createGrid(row){    
+        var arr = [];
+        for(var i = 0 ; i<row; i++){
+            arr.push([]);
+        }
+        return arr;
+    }
+    
     function attachEvent(id,vent,callback){
         
         doc.getElementById(id).addEventListener(vent,callback);
     }
     
-    var cell = {
+    function setHeaderColumn(){
         
-        positionX : null,
-        positionY : null,
-        content: null
+        
     }
     
     function Cell(){
         
         this.el = 'div';
         this.el.className = null;
-        this.content = null;
         this.el.id = null;
     }
     
     Cell.prototype = {
-        
         setElement : function(el){
             if(el){
                     this.el = doc.createElement(el);
@@ -65,22 +68,17 @@
             else{
                 this.el = doc.createElement('div');
             }
-            
             return this;
         },
         
         getElement : function(){
-            
             return this.el;
         },
         
         setClass : function(className){
-            
-            if(className){
-                
+            if(className){   
                 this.el.className = className;
             }
-            
             return this;
         },
         
@@ -94,29 +92,40 @@
                 //this.content = content
                 this.el.innerHTML = content;
             }
-    
             return this;
         },
  
         getContent : function(){
-            
-                return this.content;
+                return this.el.innerHTML;
         },
+        
+        setId : function(id){
+            if(id){
+                this.el.id = id;
+            }
+            return this;
+        },
+        
 
         addStyle : function(){
-            
             var styleString = '';
             if(arguments.length === 1){
-                
                 var keys = Object.keys(arguments[0]);
-                
                 for(var i in keys){
-                    
-                    styleString += keys[i] + ':' + arguments[0][keys[i]] + 'px;';
+                    styleString += keys[i] + ':' + arguments[0][keys[i]] + ';';
                 }
                 this.el.setAttribute('style',styleString);
             }
-            
+            return this;
+        },
+        
+        addAttributes : function(){
+            if(arguments.length === 1){
+                var keys = Object.keys(arguments[0]);
+                for(var i in keys){
+                    this.el.setAttribute(keys[i],arguments[0][keys[i]]);
+                }
+            }
             return this;
         }
     }
