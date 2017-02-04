@@ -1,5 +1,28 @@
 (function(doc,window){
     
+       var onkeydown = (function (ev) {
+                var key;
+                var isShift;
+                if (window.event) {
+                key = window.event.keyCode;
+                    isShift = !!window.event.shiftKey; // typecast to boolean
+                } else {
+                key = ev.which;
+                isShift = !!ev.shiftKey;
+                }
+  if ( isShift ) {
+    switch (key) {
+      case 16: // ignore shift key
+        break;
+      default:
+        alert(key);
+        // do stuff here?
+        break;
+    }
+  }
+});
+    
+    
     function getGrid(){
     
        const CELLWIDTH = ( window.innerWidth - 2*30)/21 + "px";
@@ -16,23 +39,30 @@
            for(var j = 0 ; j< COLNUM ; j++){
                var cssClass;
                i === 0 || j === 0 ? cssClass = "cell-col-header" : cssClass = "data-cell";
-               grid[i][j] = new Cell().setElement().setClass(cssClass).setId(String.fromCharCode(A+j-1)+i).addAttributes({ contentEditable : "true"}).addStyle({width : CELLWIDTH, height : CELLHEIGHT});
-               doc.getElementById("container1").appendChild(grid[i][j].el);   
+               grid[i][j] = new Cell().setElement().setClass(cssClass).setId(i+'-'+j).addAttributes({ contentEditable : "true"}).addStyle({width : CELLWIDTH, height : CELLHEIGHT});
+               doc.getElementById("container1").appendChild(grid[i][j].el); 
+               if(i===0){
+                   
+                   grid[i][j].addAttributes({draggable : "true"});
+                   grid[i][j].el.addEventListener('dragstart',function(e){  
+                      e.preventDefault();
+                   });
+                    grid[i][j].el.addEventListener('contextmenu',function(e){
+                        e.preventDefault();
+                        console.log(e);
+                        console.log(doc.getElementById('cm').style);
+                        doc.getElementById('cm').style.visibility = 'visible';
+                        doc.getElementById('cm').style.top = e.clientY+'px';
+                        doc.getElementById('cm').style.left = e.clientX+'px';
+                    });
+                   
+                   grid[i][j].el.addEventListener(onkeydown,function(){
+                       
+                       alert('You got me!');
+                   });
+               }
            }
        }
-    }
-    
-    function getCellDiv(type){
-        
-        var el = doc.createElement('div');
-        if(type==="col-header")
-            el.className = "cell-col-header";
-        else if(type === "row-header")
-            el.className = "cell-row-header";
-        else
-            el.className = "data-cell";
-        return el;
-        
     }
     
     function createGrid(row){    
@@ -129,6 +159,14 @@
             return this;
         }
     }
+    
+    document.getElementById('item1').addEventListener('click',function(e){
+        document.getElementById('cm').style.visibility = 'hidden';
+    });
+    
+    document.getElementById('item2').addEventListener('click',function(e){
+        document.getElementById('cm').style.visibility = 'hidden';
+    })
     
     //calling getGrid
     getGrid();

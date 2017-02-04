@@ -2,6 +2,7 @@ body{
     
     margin :0;
     padding: 0;
+    position: relative;
 }
 
 .data-cell{
@@ -19,6 +20,7 @@ body{
     border-color: grey;
     border-style: solid;
     border-width: 1px;
+    cursor: crosshair;
 }
 
 .cell-row-header{
@@ -28,4 +30,33 @@ body{
     border-color: lightgray;
     border-style: solid;
     border-width: 1px;
+}
+
+.context-menu{
+    
+    background-color: white;
+    border-style: solid;
+    border-color: black;
+    border-width: 1px;
+    width: 200px;
+    height : 80px;
+    position: absolute;
+    z-index: 100;
+    visibility: hidden;
+    top: 100px;
+    left: 100px;
+    box-shadow: 2px 2px 2px grey;
+}
+
+.item{
+   
+    height: 25px;
+    width: 150px;
+    background-color: lightgrey;
+    z-index: 100;
+    color:white;
+    padding-left:25%;
+    padding-top:5%;
+    overflow: hidden;
+    margin-top: 2px;
 }
