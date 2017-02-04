@@ -5,15 +5,15 @@
        var grid = [[]]; 
         
        var cellWidth = ( window.innerWidth - 2*30)/21;
-       var cellHeight = ( window.innerHeight - 2*24)/25;
+       var cellHeight = ( window.innerHeight - 2*24)/27;
        
-       for(var i = 0 ; i< 25 ; i ++){
+       for(var i = 0 ; i< 27 ; i ++){
            
            for(var j = 0 ; j< 21 ; j++){
               
                var cssClass;
                
-               i === 0 ? cssClass = "cell-col-header" : cssClass = "data-cell";
+               i === 0 || j === 0 ? cssClass = "cell-col-header" : cssClass = "data-cell";
                
                doc.getElementById("container1").appendChild(new Cell().setElement().setClass(cssClass).addStyle({width : cellWidth, height : cellHeight}).el);
                
