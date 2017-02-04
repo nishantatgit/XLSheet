@@ -1,0 +1,36 @@
+body{
+    
+    margin :0;
+    padding: 0;
+}
+
+.data-cell{
+    border-color: grey;
+    border-style: solid;
+    border-width: 1px; 
+    float : left;
+    /*outline-color: grey;
+    outline-style: solid;
+    outline-width: 0.5px; */ 
+}
+
+.cell-col-header{
+   background-color: dimgray;
+   color: whitesmoke;
+   float: left;
+    border-color: lightgray;
+    border-style: solid;
+    border-width: 1px;
+    /*outline-color: grey;
+    outline-style: solid;
+    outline-width: 0.5px; */
+}
+
+.cell-row-header{
+   background-color: dimgray;
+   color: whitesmoke;
+   float: left;
+    border-color: lightgray;
+    border-style: solid;
+    border-width: 1px;
+}
