@@ -3,6 +3,7 @@ body{
     margin :0;
     padding: 0;
     position: relative;
+    font-family: 'Open Sans', sans-serif;
 }
 
 .data-cell{
@@ -38,8 +39,8 @@ body{
     border-style: solid;
     border-color: black;
     border-width: 1px;
-    width: 200px;
-    height : 80px;
+    width: 170px;
+    height : 70px;
     position: absolute;
     z-index: 100;
     visibility: hidden;
@@ -50,13 +51,18 @@ body{
 
 .item{
    
-    height: 25px;
-    width: 150px;
-    background-color: lightgrey;
+    height: 20px;
+    width: 144px;
     z-index: 100;
-    color:white;
-    padding-left:25%;
+    color: black;
+    padding-left:15%;
     padding-top:5%;
     overflow: hidden;
     margin-top: 2px;
+    font-size: 12px;
+}
+
+.item:hover{
+    
+    background-color: lightgrey;
 }
