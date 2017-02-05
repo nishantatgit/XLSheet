@@ -1,27 +1,27 @@
-body{
-    
+body{ 
     margin :0;
     padding: 0;
-    position: relative;
     font-family: 'Open Sans', sans-serif;
+    overflow-x: hidden;
 }
 
 .data-cell{
     border-color: grey;
     border-style: solid;
     border-width: 1px; 
-    float : left;
     overflow: hidden;
+    display: table-cell;
+    font-size: 12px;    
 }
 
 .cell-col-header{
-   background-color:  #1aa3ff;
-   color: whitesmoke;
-   float: left;
+    background-color:#1aa3ff;
+    color: whitesmoke;
     border-color: grey;
     border-style: solid;
     border-width: 1px;
     cursor: crosshair;
+    display: table-cell;
 }
 
 .cell-row-header{
@@ -34,7 +34,6 @@ body{
 }
 
 .context-menu{
-    
     background-color: white;
     border-style: solid;
     border-color: black;
@@ -50,7 +49,6 @@ body{
 }
 
 .item{
-   
     height: 20px;
     width: 144px;
     z-index: 100;
@@ -63,6 +61,10 @@ body{
 }
 
 .item:hover{
-    
     background-color: lightgrey;
+}
+
+
+.container{
+    display: table;
 }
