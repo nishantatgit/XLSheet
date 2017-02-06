@@ -6,31 +6,37 @@ body{
 }
 
 .data-cell{
-    border-color: grey;
+    border-color: lightgrey;
     border-style: solid;
-    border-width: 1px; 
+    border-width: 0.01em; 
+    border-left-style: none;
+    border-top-style: none; 
     overflow: hidden;
     display: table-cell;
     font-size: 12px;    
 }
 
 .cell-col-header{
-    background-color:#1aa3ff;
+    /*background-color:#1aa3ff;*/
     color: whitesmoke;
-    border-color: grey;
+    border-color: lightgrey;
     border-style: solid;
     border-width: 1px;
+    border-left-style: none;
+    border-bottom-color: #989898;
     cursor: crosshair;
     display: table-cell;
 }
 
 .cell-row-header{
-   background-color: dimgray;
-   color: whitesmoke;
-   float: left;
-    border-color: lightgray;
+    color: whitesmoke;
+    border-color: lightgrey;
     border-style: solid;
     border-width: 1px;
+    border-top-style: none;
+    border-right-color: #989898   ;
+    cursor: crosshair;
+    display: table-cell;
 }
 
 .context-menu{
