@@ -1,17 +1,19 @@
 (function(doc,window){
     
-    function getGrid(){
+    var cw = ( window.innerWidth - 2*30)/21 + "px";
+    var ch = ( window.innerHeight - 2*24)/27 + "px";
+    function getGrid(r,n,h,w){
     
-       const CELLWIDTH = ( window.innerWidth - 2*30)/21 + "px";
-       const CELLHEIGHT = ( window.innerHeight - 2*24)/27 + "px";
-       const ROWNUM = 27;
-       const COLNUM = 21;
+       const CELLWIDTH = ( window.innerWidth - 20)/21 + "px";
+       const CELLHEIGHT = ( window.innerHeight - 2*23)/24 + "px";
+       var rownum = r || 29;
+       const colnum = n ||21;
            
-       var grid = createGrid(ROWNUM); 
+       var grid = createGrid(rownum,h,w); 
        
        window.grid = grid;
        
-       for(var i = 0 ; i< ROWNUM ; i ++){
+       for(var i = 0 ; i< rownum ; i ++){
            
            var row = document.createElement('div');
            row.setAttribute('id',i);
@@ -19,9 +21,9 @@
            row.style.display = 'table-row';
            doc.getElementById("sheet1").appendChild(row);
            
-           for(var j = 0 ; j< COLNUM ; j++){
+           for(var j = 0 ; j< colnum ; j++){
                var cssClass;
-               i === 0 || j === 0 ? cssClass = "cell-col-header" : cssClass = "data-cell";
+               i === 0 ? cssClass = "cell-col-header" : (j === 0 ? cssClass = "cell-row-header" : cssClass = "data-cell");
                grid[i][j] = new Cell().setElement().setClass(cssClass).setId(i+'-'+j).addAttributes({ contentEditable : "true"});
                doc.getElementById(i).appendChild(grid[i][j].el); 
                if(i===0){
@@ -32,7 +34,7 @@
                       e.preventDefault();
                       var prev_dim = [];
                       var col_num = parseInt(e.target.getAttribute('id').split('-')[1]);
-                      for(var idx=col_num; idx < COLNUM; idx++){
+                      for(var idx=col_num; idx < colnum; idx++){
                           prev_dim[idx] = document.getElementById('0-'+idx).style.width;
                       }
                       console.log(prev_dim);
@@ -59,10 +61,11 @@
                    });
                }
            }
+           grid[0][0].el.style.borderRightColor = '#989898';
        }
     }
     
-    function createGrid(row){    
+    function createGrid(row,h,w){    
         
         var arr = [];
         for(var i = 0 ; i<row; i++){
@@ -70,8 +73,8 @@
         }
         
         //assign the dimension of sheet
-        document.getElementById('sheet1').style.height = window.innerHeight+'px';
-        document.getElementById('sheet1').style.width = window.innerWidth+'px';
+        document.getElementById('sheet1').style.height = window.innerHeight+h+'px';
+        document.getElementById('sheet1').style.width = window.innerWidth+w+'px';
         return arr;
     }
     
@@ -172,13 +175,14 @@
     
     
     var keyboardKeys = [];
-    window.addEventListener("keydown", function(e){
+    
+    document.getElementById('sheet1').addEventListener("keydown", function(e){
       console.log('keyCode : ',e.keyCode);
       keyboardKeys[e.keyCode] = true;
       //Control + b
       if(keyboardKeys[17] === true){
       if (keyboardKeys[66] === true) {
-          e.preventDefault(); //console.log('document.getElementById(e.target.id).style.fontWeight',document.getElementById(e.target.id).style.fontWeight);
+          e.preventDefault(); 
            if(document.getElementById(e.target.id).style.fontWeight){
                
                if(document.getElementById(e.target.id).style.fontWeight != 100){
@@ -226,17 +230,24 @@
                document.getElementById(e.target.id).style.fontStyle =  'italic';
           }
       }
-      
-      
       }
     }, false);
     
-    window.addEventListener("keyup", function(e){
+    document.getElementById('sheet1').addEventListener("keyup", function(e){
         //console.log('onkeyup : ' + keyboardKeys);
         keyboardKeys[e.keyCode] = false;
     }, false);
     
+    document.getElementById('cm').addEventListener('click',addNewColumn,false);
+    
+    function addNewColumn(e){
+         document.getElementById('sheet1').innerHTML = '';
+         getGrid()
+    }
+    
     //calling getGrid
     getGrid();
+    
+    //saving data to local storage
     
 })(document,window);
