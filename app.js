@@ -6,12 +6,12 @@
     
        const CELLWIDTH = ( window.innerWidth - 20)/21 + "px";
        const CELLHEIGHT = ( window.innerHeight - 2*23)/24 + "px";
-       var rownum = r || 29;
-       const colnum = n ||21;
+       var rownum = r || 30;
+       var colnum = n || 21;
            
        var grid = createGrid(rownum,h,w); 
        
-       window.grid = grid;
+       doc.grid = grid;
        
        for(var i = 0 ; i< rownum ; i ++){
            
@@ -37,15 +37,11 @@
                       for(var idx=col_num; idx < colnum; idx++){
                           prev_dim[idx] = document.getElementById('0-'+idx).style.width;
                       }
-                      console.log(prev_dim);
                       e.target.style.width = '200px';
-                      console.log('sheet width', document.getElementById('sheet1').style.width);
                       document.getElementById('sheet1').style.width = parseInt(document.getElementById('sheet1').style.width) + 200 + 'px';
                    });
                     grid[i][j].el.addEventListener('contextmenu',function(e){
                         e.preventDefault();
-                        console.log(e);
-                        console.log(doc.getElementById('cm').style);
                         doc.getElementById('cm').style.visibility = 'visible';
                         doc.getElementById('cm').style.top = e.clientY+'px';
                         doc.getElementById('cm').style.left = e.clientX+'px';
@@ -247,6 +243,18 @@
     
     //calling getGrid
     getGrid();
+    
+    //setting row and column header
+    var grid = doc.grid;
+    for(var idx=0; idx < grid.length; idx++){
+        
+        grid[idx][0].setContent(idx);
+    }
+    
+    var col_lebel = 65;
+    for(var idx=1; idx < grid[0].length; idx++,col_lebel++){
+        grid[0][idx].setContent(String.fromCharCode(col_lebel)); 
+    }
     
     //saving data to local storage
     
