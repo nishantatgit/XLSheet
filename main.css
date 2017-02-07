@@ -6,6 +6,11 @@ body{
     overflow-x: hidden;
 }
 
+div{
+    margin :0;
+    padding :0;
+}
+
 .data-cell{
     border-color: lightgrey;
     border-style: solid;
@@ -44,6 +49,10 @@ body{
     cursor: crosshair;
     display: table-cell;
     text-align: center;
+}
+
+.cell-col-header:hover{
+    color:black;
 }
 
 .context-menu{

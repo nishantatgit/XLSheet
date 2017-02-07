@@ -23,8 +23,10 @@
            
            for(var j = 0 ; j< colnum ; j++){
                var cssClass;
+               var contentEditable = false;
                i === 0 ? cssClass = "cell-col-header" : (j === 0 ? cssClass = "cell-row-header" : cssClass = "data-cell");
-               grid[i][j] = new Cell().setElement().setClass(cssClass).setId(i+'-'+j).addAttributes({ contentEditable : "true"});
+               i === 0 || j === 0 ? contentEditable = false : contentEditable = true;
+               grid[i][j] = new Cell().setElement().setClass(cssClass).setId(i+'-'+j).addAttributes({ contentEditable : contentEditable});
                doc.getElementById(i).appendChild(grid[i][j].el); 
                if(i===0){
                    grid[i][j].el.style.width = CELLWIDTH;
