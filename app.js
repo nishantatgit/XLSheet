@@ -1,17 +1,17 @@
 (function(doc,window){
     
-    var cw = ( window.innerWidth - 2*30)/21 + "px";
-    var ch = ( window.innerHeight - 2*24)/27 + "px";
-    
-    
-    
     function getGrid(r,n,h,w){
     
-       const CELLWIDTH = ( window.innerWidth - 20)/21 + "px";
-       const CELLHEIGHT = ( window.innerHeight - 2*23)/24 + "px";
+       
        var rownum = r || 30;
        var colnum = n || 21;
-           
+        
+       var CELLWIDTH = ( window.innerWidth - colnum)/colnum + "px";
+       var CELLHEIGHT = ( window.innerHeight - rownum)/rownum  + "px";
+        
+       doc.cellwidth = CELLWIDTH;
+       doc.cellheight = CELLHEIGHT;
+    
        var grid = createGrid(rownum,h,w); 
        
        doc.grid = grid;
@@ -28,33 +28,22 @@
                var cssClass;
                var contentEditable = false;
                i === 0 ? cssClass = "cell-col-header" : (j === 0 ? cssClass = "cell-row-header" : cssClass = "data-cell");
+               
+               //make data cells (apart from row and column headers editable)
                i === 0 || j === 0 ? contentEditable = false : contentEditable = true;
+               
+               //create cell element and store it in gird
                grid[i][j] = new Cell().setElement().setClass(cssClass).setId(i+'-'+j).addAttributes({ contentEditable : contentEditable});
-               doc.getElementById(i).appendChild(grid[i][j].el); 
+               
+               //add cell to the dom
+               doc.getElementById(i).appendChild(grid[i][j].el);
+               
                if(i===0){
                    grid[i][j].el.style.width = CELLWIDTH;
                    grid[i][j].el.style.height = CELLHEIGHT;
-                   grid[i][j].addAttributes({draggable : "true"});
-                   grid[i][j].el.addEventListener('dragstart',function(e){  
-                      e.preventDefault();
-                      var prev_dim = [];
-                      var col_num = parseInt(e.target.getAttribute('id').split('-')[1]);
-                      for(var idx=col_num; idx < colnum; idx++){
-                          prev_dim[idx] = document.getElementById('0-'+idx).style.width;
-                      }
-                      e.target.style.width = '200px';
-                      document.getElementById('sheet1').style.width = parseInt(document.getElementById('sheet1').style.width) + 200 + 'px';
-                   });
-                    grid[i][j].el.addEventListener('contextmenu',function(e){
-                        e.preventDefault();
-                        doc.getElementById('cm').style.visibility = 'visible';
-                        doc.getElementById('cm').style.top = e.clientY+'px';
-                        doc.getElementById('cm').style.left = e.clientX+'px';
-                    });
                }
            }
            grid[0][0].el.style.borderRightColor = '#989898';
-           //grid[0][0].addStyle({ borderRightColor = 'white'});
        }
         
        loadSavedData();
@@ -62,6 +51,8 @@
     
     function createGrid(row,h,w){    
         
+        var h = h || 0;
+        var w = w || 0;
         var arr = [];
         for(var i = 0 ; i<row; i++){
             arr.push([]);
@@ -73,16 +64,15 @@
         return arr;
     }
     
-    //function to load the data into excel sheet from auto storage
+    //function to load the data into excel sheet from local storage
     function loadSavedData(){
-        console.log('insiade saved data', document.grid);
         var keys = Object.keys(window.localStorage);
-        console.log('local storage keys',keys);
         for(var i = 0 ; i<keys.length; i++){
             var gIdx = keys[i].split('-').map(Number);
             document.grid[gIdx[0]][gIdx[1]].setContent(window.localStorage[keys[i]]);
         }
     }
+    
     
     function Cell(){
         
@@ -120,7 +110,6 @@
         setContent : function(content){    
             if(content)
             {
-                //this.content = content
                 this.el.innerHTML = content;
             }
             return this;
@@ -145,7 +134,6 @@
                 for(var i in keys){
                     styleString += keys[i] + ':' + arguments[0][keys[i]] + ';';
                 }
-                //this.el.setAttribute('style',styleString);
                 this.el.style[keys[i]] = arguments[0][keys[i]];
             }
             return this;
@@ -170,12 +158,21 @@
         document.getElementById('cm').style.visibility = 'hidden';
     },false);
     
+     document.getElementById('item3').addEventListener('click',function(e){
+        document.getElementById('cm2').style.visibility = 'hidden';
+    },false);
+    
+    document.getElementById('item4').addEventListener('click',function(e){
+        document.getElementById('cm2').style.visibility = 'hidden';
+    },false);
+    
     
     var keyboardKeys = [];
     
     document.getElementById('sheet1').addEventListener("keydown", function(e){
       console.log('keyCode : ',e.keyCode);
       keyboardKeys[e.keyCode] = true;
+        
       //Control + b
       if(keyboardKeys[17] === true){
       if (keyboardKeys[66] === true) {
@@ -193,6 +190,7 @@
                 document.getElementById(e.target.id).style.fontWeight = 700;
            }
         }
+          
       // control + u
       else if(keyboardKeys[85] === true){
           
@@ -210,7 +208,8 @@
                document.getElementById(e.target.id).style.textDecoration =  'underline';
           }
       }
-          
+      
+      // control + i         
       else if(keyboardKeys[73] === true){
           
           e.preventDefault();
@@ -230,16 +229,57 @@
       }
     }, false);
     
-    document.getElementById('sheet1').addEventListener("keyup", function(e){
-        //console.log('onkeyup : ' + keyboardKeys);
+    document.getElementById('sheet1').addEventListener('keyup', function(e){
         keyboardKeys[e.keyCode] = false;
     }, false);
     
+    
+    //saving data to local storage
+    document.getElementById('sheet1').addEventListener('keyup', function(e){
+        {
+            var id = e.target.id;
+            window.localStorage[id] = document.getElementById(id).innerHTML;
+        }
+    });
+    
+    //
+    document.getElementById('sheet1').addEventListener('contextmenu', function(e){
+        
+        e.preventDefault();
+        var idArr = e.target.id.split('-').map(Number);
+        if(idArr[0]===0){
+            doc.getElementById('cm').style.visibility = 'visible';
+            doc.getElementById('cm').style.top = e.clientY+'px';
+            doc.getElementById('cm').style.left = e.clientX+'px';    
+        }
+        else if(idArr[1] === 0){
+             doc.getElementById('cm2').style.visibility = 'visible';
+            doc.getElementById('cm2').style.top = e.clientY+'px';
+            doc.getElementById('cm2').style.left = e.clientX+'px';    
+        }
+    },false);
+    
+    document.getElementById('sheet1').addEventListener('click',function(e){
+        
+            doc.getElementById('cm').style.visibility = 'hidden';
+            doc.getElementById('cm2').style.visibility = 'hidden';
+        
+            //document.getElementById('cm').style.visibility = 'hidden';
+            
+            
+    })
+    
+    document.getElementById('cm').addEventListener('contextmenu',function(e){
+       e.preventDefault();
+    },false);
+    
+    document.getElementById('cm2').addEventListener('contextmenu',function(e){
+        e.preventDefault();
+    })
     document.getElementById('cm').addEventListener('click',addNewColumn,false);
     
     function addNewColumn(e){
-         document.getElementById('sheet1').innerHTML = '';
-         getGrid()
+         e.preventDefault();
     }
     
     //calling getGrid
@@ -257,19 +297,6 @@
         grid[0][idx].setContent(String.fromCharCode(col_lebel)); 
     }
     
-    //saving data to local storage
     
-    document.getElementById('sheet1').addEventListener('keyup', function(e){
-        {
-            var id = e.target.id;
-            console.log('e.target.id',id);
-            document.getElementById(id).innerHTML;
-            console.log(localStorage[id]);
-            //localStorage[1] = [];
-            //localStorage[1][2] = 'like a pro';
-            var idArr = id.split('-');
-            window.localStorage[id] = document.getElementById(id).innerHTML;
-        }
-    });
     
 })(document,window);
