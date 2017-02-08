@@ -2,6 +2,9 @@
     
     var cw = ( window.innerWidth - 2*30)/21 + "px";
     var ch = ( window.innerHeight - 2*24)/27 + "px";
+    
+    
+    
     function getGrid(r,n,h,w){
     
        const CELLWIDTH = ( window.innerWidth - 20)/21 + "px";
@@ -48,19 +51,13 @@
                         doc.getElementById('cm').style.top = e.clientY+'px';
                         doc.getElementById('cm').style.left = e.clientX+'px';
                     });
-                   
-                   grid[i][j].el.addEventListener('dragend',function(e){
-                       console.log('drag ended',e);
-                   })
-                   
-                   grid[i][j].el.addEventListener(onkeydown,function(){
-                       
-                       alert('You got me!');
-                   });
                }
            }
            grid[0][0].el.style.borderRightColor = '#989898';
+           //grid[0][0].addStyle({ borderRightColor = 'white'});
        }
+        
+       loadSavedData();
     }
     
     function createGrid(row,h,w){    
@@ -76,14 +73,15 @@
         return arr;
     }
     
-    function attachEvent(id,vent,callback){
-        
-        doc.getElementById(id).addEventListener(vent,callback);
-    }
-    
-    function setHeaderColumn(){
-        
-        
+    //function to load the data into excel sheet from auto storage
+    function loadSavedData(){
+        console.log('insiade saved data', document.grid);
+        var keys = Object.keys(window.localStorage);
+        console.log('local storage keys',keys);
+        for(var i = 0 ; i<keys.length; i++){
+            var gIdx = keys[i].split('-').map(Number);
+            document.grid[gIdx[0]][gIdx[1]].setContent(window.localStorage[keys[i]]);
+        }
     }
     
     function Cell(){
@@ -147,7 +145,8 @@
                 for(var i in keys){
                     styleString += keys[i] + ':' + arguments[0][keys[i]] + ';';
                 }
-                this.el.setAttribute('style',styleString);
+                //this.el.setAttribute('style',styleString);
+                this.el.style[keys[i]] = arguments[0][keys[i]];
             }
             return this;
         },
@@ -259,5 +258,18 @@
     }
     
     //saving data to local storage
+    
+    document.getElementById('sheet1').addEventListener('keyup', function(e){
+        {
+            var id = e.target.id;
+            console.log('e.target.id',id);
+            document.getElementById(id).innerHTML;
+            console.log(localStorage[id]);
+            //localStorage[1] = [];
+            //localStorage[1][2] = 'like a pro';
+            var idArr = id.split('-');
+            window.localStorage[id] = document.getElementById(id).innerHTML;
+        }
+    });
     
 })(document,window);
