@@ -1,5 +1,7 @@
 (function(doc,window){
     
+    
+    
     function getGrid(r,n,h,w){
     
        
@@ -11,6 +13,9 @@
         
        doc.cellwidth = CELLWIDTH;
        doc.cellheight = CELLHEIGHT;
+        
+       doc.rownum = rownum;
+       doc.colnum = colnum;
     
        var grid = createGrid(rownum,h,w); 
        
@@ -150,23 +155,6 @@
         }
     }
     
-    document.getElementById('item1').addEventListener('click',function(e){
-        document.getElementById('cm').style.visibility = 'hidden';
-    },false);
-    
-    document.getElementById('item2').addEventListener('click',function(e){
-        document.getElementById('cm').style.visibility = 'hidden';
-    },false);
-    
-     document.getElementById('item3').addEventListener('click',function(e){
-        document.getElementById('cm2').style.visibility = 'hidden';
-    },false);
-    
-    document.getElementById('item4').addEventListener('click',function(e){
-        document.getElementById('cm2').style.visibility = 'hidden';
-    },false);
-    
-    
     var keyboardKeys = [];
     
     document.getElementById('sheet1').addEventListener("keydown", function(e){
@@ -242,7 +230,8 @@
         }
     });
     
-    //
+    var clickLocation;
+    
     document.getElementById('sheet1').addEventListener('contextmenu', function(e){
         
         e.preventDefault();
@@ -250,24 +239,38 @@
         if(idArr[0]===0){
             doc.getElementById('cm').style.visibility = 'visible';
             doc.getElementById('cm').style.top = e.clientY+'px';
-            doc.getElementById('cm').style.left = e.clientX+'px';    
+            doc.getElementById('cm').style.left = e.clientX+'px';
+            clickLocation = e.target.id; 
         }
         else if(idArr[1] === 0){
              doc.getElementById('cm2').style.visibility = 'visible';
             doc.getElementById('cm2').style.top = e.clientY+'px';
-            doc.getElementById('cm2').style.left = e.clientX+'px';    
+            doc.getElementById('cm2').style.left = e.clientX+'px';
+            clickLocation = e.target.id; 
         }
     },false);
     
     document.getElementById('sheet1').addEventListener('click',function(e){
-        
             doc.getElementById('cm').style.visibility = 'hidden';
             doc.getElementById('cm2').style.visibility = 'hidden';
-        
-            //document.getElementById('cm').style.visibility = 'hidden';
-            
-            
-    })
+    });
+    
+     document.getElementById('item1').addEventListener('click',function(e){
+        document.getElementById('cm').style.visibility = 'hidden';
+    },false);
+    
+    document.getElementById('item2').addEventListener('click',function(e){
+        document.getElementById('cm').style.visibility = 'hidden';
+    },false);
+    
+     document.getElementById('item3').addEventListener('click',function(e){
+        document.getElementById('cm2').style.visibility = 'hidden';
+        addNewRow(e);
+    },false);
+    
+    document.getElementById('item4').addEventListener('click',function(e){
+        document.getElementById('cm2').style.visibility = 'hidden';
+    },false);
     
     document.getElementById('cm').addEventListener('contextmenu',function(e){
        e.preventDefault();
@@ -275,11 +278,33 @@
     
     document.getElementById('cm2').addEventListener('contextmenu',function(e){
         e.preventDefault();
-    })
-    document.getElementById('cm').addEventListener('click',addNewColumn,false);
+    },false);
     
-    function addNewColumn(e){
-         e.preventDefault();
+    
+    
+    function addNewRow(e){
+        
+        var row = document.createElement('div');
+           row.setAttribute('id',clickLocation+'a');
+           row.className = 'row';
+           row.style.display = 'table-row';
+        console.log('clickLocation',clickLocation);
+        for(var i = 0 ; i< document.colnum ; i++){
+               var cssClass = "data-cell";
+               var contentEditable = false;
+               
+               i === 0 ; cssClass ='cell-row-header'; cssClass = 'data-cell';
+               
+               //make data cells (apart from row and column headers editable)
+               i === 0? contentEditable = false : contentEditable = true;
+               
+               //create cell element and store it in gird
+               var tmp = new Cell().setElement().setClass(cssClass).setId(clickLocation + '-' + i).addAttributes({ contentEditable : contentEditable});
+                row.appendChild(tmp.el);
+               }
+              
+        doc.getElementById(clickLocation).parentElement.parentElement.appendChild(row,document.getElementById(clickLocation));
+       
     }
     
     //calling getGrid
