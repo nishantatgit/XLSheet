@@ -1,24 +1,30 @@
 (function(doc,window){
     
+    XLsheet = {};
     
-    
-    function createGrid(r,n,h,w){
+    function createGrid(){
     
        var rownum = parseInt(window.localStorage.rownum) || 30;
        var colnum = parseInt(window.localStorage.colnum) || 21;
+       //assign the dimension of sheet
+       if(colnum === 21){
+            document.getElementById('sheet1').style.width = window.innerWidth+'px';
+       }else{
+            document.getElementById('sheet1').style.width = window.innerWidth + (64*(colnum-21)) + 'px';
+       }
+        document.getElementById('sheet1').style.height = window.innerHeight+'px';
+           
+       var cellwidth = ( parseInt(document.getElementById('sheet1').style.width) - colnum)/colnum + "px";
+       var cellheight = ( window.innerHeight - rownum)/rownum  + "px";
         
-       var CELLWIDTH = ( window.innerWidth - colnum)/colnum + "px";
-       var CELLHEIGHT = ( window.innerHeight - rownum)/rownum  + "px";
-        
-       doc.cellwidth = CELLWIDTH;
-       doc.cellheight = CELLHEIGHT;
-        
-       doc.rownum = rownum;
-       doc.colnum = colnum;
+       XLsheet.rownum = rownum;
+       XLsheet.colnum = colnum;
+       XLsheet.cellwidth = cellwidth;
+       XLsheet.cellheight = cellheight;
     
-       var grid = getGrid(rownum,h,w); 
+       var grid = getGrid(rownum); 
        
-       doc.grid = grid;
+       XLsheet.grid = grid;
        
        for(var i = 0 ; i< rownum ; i ++){
            
@@ -26,7 +32,7 @@
            row.setAttribute('id',i);
            row.className = 'row';
            row.style.display = 'table-row';
-           doc.getElementById("sheet1").appendChild(row);
+           document.getElementById("sheet1").appendChild(row);
            
            for(var j = 0 ; j< colnum ; j++){
                var cssClass;
@@ -40,11 +46,11 @@
                grid[i][j] = new Cell().setElement().setClass(cssClass).setId(i+'-'+j).addAttributes({ contentEditable : contentEditable});
                
                //add cell to the dom
-               doc.getElementById(i).appendChild(grid[i][j].el);
+               document.getElementById(i).appendChild(grid[i][j].el);
                
                if(i===0){
-                   grid[i][j].el.style.width = CELLWIDTH;
-                   grid[i][j].el.style.height = CELLHEIGHT;
+                   grid[i][j].el.style.width = cellwidth;
+                   grid[i][j].el.style.height = cellheight;
                }
            }
            grid[0][0].el.style.borderRightColor = '#989898';
@@ -62,9 +68,7 @@
             arr.push([]);
         }
         
-        //assign the dimension of sheet
-        document.getElementById('sheet1').style.height = window.innerHeight+h+'px';
-        document.getElementById('sheet1').style.width = window.innerWidth+w+'px';
+       
         return arr;
     }
     
@@ -74,9 +78,9 @@
         for(var i = 0 ; i<keys.length; i++){
             var gIdx = keys[i].split('-').map(Number);
             if(gIdx.length===2)
-                if(document.grid[gIdx[0]])
-                    if(document.grid[gIdx[0]][gIdx[1]])
-                        document.grid[gIdx[0]][gIdx[1]].setContent(window.localStorage[keys[i]]);
+                if(XLsheet.grid[gIdx[0]])
+                    if(XLsheet.grid[gIdx[0]][gIdx[1]])
+                        XLsheet.grid[gIdx[0]][gIdx[1]].setContent(window.localStorage[keys[i]]);
         }
     }
     
@@ -90,10 +94,10 @@
     Cell.prototype = {
         setElement : function(el){
             if(el){
-                    this.el = doc.createElement(el);
+                    this.el = document.createElement(el);
             }
             else{
-                this.el = doc.createElement('div');
+                this.el = document.createElement('div');
             }
             return this;
         },
@@ -132,6 +136,10 @@
             return this;
         },
         
+        getId : function(id){
+            return this.el.id;
+        },
+        
 
         addStyle : function(){
             var styleString = '';
@@ -158,6 +166,8 @@
     
     var keyboardKeys = [];
     
+    
+    //keyboard shortcuts for underline , italic and bold
     document.getElementById('sheet1').addEventListener("keydown", function(e){
       keyboardKeys[e.keyCode] = true;
         
@@ -166,7 +176,6 @@
       if (keyboardKeys[66] === true) {
           e.preventDefault(); 
            if(document.getElementById(e.target.id).style.fontWeight){
-               
                if(document.getElementById(e.target.id).style.fontWeight != 100){
                    document.getElementById(e.target.id).style.fontWeight = 100;
                }
@@ -237,24 +246,25 @@
         e.preventDefault();
         var idArr = e.target.id.split('-').map(Number);
         if(idArr[0]===0){
-            doc.getElementById('cm').style.visibility = 'visible';
-            doc.getElementById('cm').style.top = e.clientY+'px';
-            doc.getElementById('cm').style.left = e.clientX+'px';
+            document.getElementById('cm').style.visibility = 'visible';
+            document.getElementById('cm').style.top = e.clientY+'px';
+            document.getElementById('cm').style.left = e.clientX+'px';
             clickLocation = e.target.id; 
         }
         else if(idArr[1] === 0){
-             doc.getElementById('cm2').style.visibility = 'visible';
-            doc.getElementById('cm2').style.top = e.clientY+'px';
-            doc.getElementById('cm2').style.left = e.clientX+'px';
+             document.getElementById('cm2').style.visibility = 'visible';
+            document.getElementById('cm2').style.top = e.clientY+'px';
+            document.getElementById('cm2').style.left = e.clientX+'px';
             clickLocation = e.target.id; 
         }
     },false);
     
     document.getElementById('sheet1').addEventListener('click',function(e){
-            doc.getElementById('cm').style.visibility = 'hidden';
-            doc.getElementById('cm2').style.visibility = 'hidden';
+            document.getElementById('cm').style.visibility = 'hidden';
+            documnet.getElementById('cm2').style.visibility = 'hidden';
     },false);
     
+     
      document.getElementById('item1').addEventListener('click',function(e){
         document.getElementById('cm').style.visibility = 'hidden';
         addColumn(e);
@@ -288,51 +298,51 @@
         var row = document.createElement('div');
            row.className = 'row';
            row.style.display = 'table-row';
-           row.id = document.grid.length;
+           row.id = XLsheet.grid.length;
         console.log('clickLocation',clickLocation);
         
         //add cell array to grid for new row
-        console.log('grid then',document.grid.length);
+        console.log('grid then',XLsheet.grid.length);
         var rowPosition = clickLocation.split('-').map(Number)[0];
         console.log('rowPosition',rowPosition);
-        document.grid[document.grid.length] = [];
-        for(var i = 0 ; i< document.colnum ; i++){
+        XLsheet.grid[XLsheet.grid.length] = [];
+        for(var i = 0 ; i< XLsheet.colnum ; i++){
                var cssClass = "data-cell";
                var contentEditable = false;
                
-               i === 0 ; cssClass ='cell-row-header'; cssClass = 'data-cell';
+               i === 0 ? cssClass ='cell-row-header' : cssClass = 'data-cell';
                
                //make data cells apart from row and column headers editable
                i === 0? contentEditable = false : contentEditable = true;
                
                
                //create cell element and store it in gird
-               document.grid[document.grid.length-1][i] = new Cell().setElement().setId(row.id+'-'+i).setClass(cssClass).addAttributes({ contentEditable : contentEditable});
+               XLsheet.grid[XLsheet.grid.length-1][i] = new Cell().setElement().setId(row.id+'-'+i).setClass(cssClass).addAttributes({ contentEditable : contentEditable});
                if(i===0){
-                    document.grid[document.grid.length-1][i].setContent(document.grid.length-1);
+                    XLsheet.grid[XLsheet.grid.length-1][i].setContent(XLsheet.grid.length-1);
                }
-               row.appendChild(document.grid[document.grid.length-1][i].getElement());
+               row.appendChild(XLsheet.grid[XLsheet.grid.length-1][i].getElement());
             }
         
         //insert new row before current row
-        doc.getElementById('sheet1').appendChild(row);
+        document.getElementById('sheet1').appendChild(row);
         
-        document.rownum += 1;
-        window.localStorage.rownum = document.rownum;
+        XLsheet.rownum += 1;
+        window.localStorage.rownum = XLsheet.rownum;
     }
     
     function deleteRow(e){ 
         console.log('deleting row');
         var el = document.getElementById(clickLocation).parentElement.parentElement.lastChild;
         document.getElementById(clickLocation).parentElement.parentElement.removeChild(el);
-        document.grid.pop();
-        document.rownum -= 1;
-        window.localStorage.rownum = document.rownum;
+        XLsheet.grid.pop();
+        XLsheet.rownum -= 1;
+        window.localStorage.rownum = XLsheet.rownum;
         window.localStorage[clickLocation]=undefined;
     }
     
     function addColumn(e){
-        document.getElementById('sheet1').style.width = parseInt(document.getElementById('sheet1').style.width) + parseInt(document.cellwidth) + 'px';
+        document.getElementById('sheet1').style.width = parseInt(document.getElementById('sheet1').style.width) + parseInt(XLsheet.cellwidth) + 'px';
         var el = document.getElementById('sheet1');
         var children = el.children;
         var contentEditable;
@@ -342,30 +352,14 @@
             i === 0 ? cssClass = 'cell-col-header' : cssClass = 'data-cell';
             var div = new Cell().setElement().setClass(cssClass).setId(i+'-'+grid[i].length).addAttributes({ contentEditable : contentEditable});
             grid[i][grid[i].length] = div;
-            if(i===0){
-                   grid[i][grid[i].length-1].el.style.width = document.cellwidth;
-                   //grid[i][grid[i].length-1].el.style.height = document.cellheight;
-               }
             children[i].appendChild(div.el);
-            
-            if(i==0){
-                var count = grid[i].length -1;
-                var count1 = -1;
-                while(count>0){
-                    count -= 26;
-                    count1++;
-                }
-                count += 26;
-                grid[i][grid[i].length-1].setContent(String.fromCharCode(65+grid[i].length-2));
-                if(count1 !== 0){
-                    var prefix = String.fromCharCode(65+count1-1);
-                    var postfix  = String.fromCharCode(65+count-1);
-                    grid[i][grid[i].length-1].setContent(prefix+postfix);
-                }
+            if(i===0){
+                   grid[i][grid[i].length-1].el.style.width = XLsheet.cellwidth;
+                   grid[i][grid[i].length-1].setContent(getCollebel(grid[i].length-1));
             }
         }
-        document.colnum  += 1;
-        window.localStorage.colnum = document.colnum;
+        XLsheet.colnum  += 1;
+        window.localStorage.colnum = XLsheet.colnum;
     }
     
     function deleteColumn(e){
@@ -374,34 +368,56 @@
             children[i].removeChild(children[i].lastChild);
             console.log('children[i].lastChild',children[i].lastChild);
         } 
-        document.colnum  -= 1;
-        window.localStorage.colnum = document.colnum;
+        for(var i = 0 ; i < XLsheet.grid.length; i++){
+            XLsheet.grid[i].pop();
+        }
+        XLsheet.colnum  -= 1;
+        window.localStorage.colnum = XLsheet.colnum;
     }
     
     function addRowlebel(){
         for(var idx=0; idx < grid.length; idx++){
-            document.grid[idx][0].setContent(idx);
+            XLsheet.grid[idx][0].setContent(idx);
         }
     }
     
     function addCollebel(){
         var col_lebel = 65;
         for(var idx=1; idx < grid[0].length; idx++,col_lebel++){
-            grid[0][idx].setContent(String.fromCharCode(col_lebel)); 
+            grid[0][idx].setContent(getCollebel(idx)); 
         }
+    }
+    
+    function getCollebel(index){
+        var count = index;
+                var count1 = -1;
+                while(count>0){
+                    count -= 26;
+                    count1++;
+                }
+                count += 26;
+                if(count1 === 0){
+                    return String.fromCharCode(65+index-1);
+                }
+                else{
+                    var prefix = String.fromCharCode(65+count1-1);
+                    var postfix  = String.fromCharCode(65+count-1);
+                    return prefix+postfix;
+                }
     }
     
     //call getGrid
     createGrid();
     
-    window.localStorage.rownum = document.rownum;
-    window.localStorage.colnum = document.colnum;
+    window.localStorage.rownum = XLsheet.rownum;
+    window.localStorage.colnum = XLsheet.colnum;
     
     //setting row and column header
-    var grid = doc.grid;
+    var grid = XLsheet.grid;
     
     addRowlebel();
     
     addCollebel();
+    
     
 })(document,window);
