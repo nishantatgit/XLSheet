@@ -261,7 +261,7 @@
     
     document.getElementById('sheet1').addEventListener('click',function(e){
             document.getElementById('cm').style.visibility = 'hidden';
-            documnet.getElementById('cm2').style.visibility = 'hidden';
+            document.getElementById('cm2').style.visibility = 'hidden';
     },false);
     
      
